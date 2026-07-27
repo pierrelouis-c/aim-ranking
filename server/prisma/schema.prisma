@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Score {
+  id            Int      @id @default(autoincrement())
+  nickname      String   @db.VarChar(16)
+  score         Int
+  hits          Int
+  misses        Int
+  accuracy      Float
+  avgReactionMs Int?     @map("avg_reaction_ms")
+  bestStreak    Int?     @map("best_streak")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([score(sort: Desc), createdAt(sort: Asc)], map: "scores_score_desc_idx")
+  @@index([createdAt(sort: Desc)], map: "scores_created_at_idx")
+  @@map("scores")
+}

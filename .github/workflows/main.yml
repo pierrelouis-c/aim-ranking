@@ -1,0 +1,163 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js 24
+      uses: actions/setup-node@v4
+      with:
+        node-version: '24'
+
+    - name: Install server dependencies
+      run: |
+        cd server
+        npm ci
+
+    - name: Install client dependencies
+      run: |
+        cd client
+        npm ci
+
+    - name: Create server .env file
+      run: |
+        echo "${{ secrets.DEPLOY_ENV_VARIABLES_API }}" > server/.env
+
+    - name: Create client .env file
+      run: |
+        echo "${{ secrets.DEPLOY_ENV_VARIABLES_FRONT }}" > web/.env
+
+    - name: Build client
+      run: |
+        cd web
+        npm run build
+
+    - name: Deploy frontend build
+      uses: burnett01/rsync-deployments@v8
+      with:
+        switches: -avzr --delete
+        path: client/dist/
+        remote_path: ${{ secrets.DEPLOY_PATH_FRONT }}
+        remote_host: ${{ secrets.DEPLOY_HOST }}
+        remote_user: ${{ secrets.DEPLOY_USER }}
+        remote_port: ${{ env.DEPLOY_PORT }}
+        remote_key: ${{ secrets.DEPLOY_KEY }}
+
+    - name: Deploy API server
+      uses: burnett01/rsync-deployments@v8
+      with:
+        switches: -avzr --delete
+        path: server/
+        remote_path: ${{ secrets.DEPLOY_PATH_API }}
+        remote_host: ${{ secrets.DEPLOY_HOST }}
+        remote_user: ${{ secrets.DEPLOY_USER }}
+        remote_port: ${{ env.DEPLOY_PORT }}
+        remote_key: ${{ secrets.DEPLOY_KEY }}
+
+    - name: Install deps, init DB, restart
+      uses: appleboy/ssh-action@v1.2.5
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        port: ${{ env.DEPLOY_PORT }}
+        script: |
+          export NVM_DIR="$HOME/.nvm"
+          source "$NVM_DIR/nvm.sh"
+          nvm use node
+          cd ${{ secrets.DEPLOY_PATH_API }}
+          npm ci --omit=dev
+          pm2 restart API_Footify || pm2 start src/index.js --name API_Footify
+          pm2 savename: Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js 24
+      uses: actions/setup-node@v4
+      with:
+        node-version: '24'
+
+    - name: Install server dependencies
+      run: |
+        cd server
+        npm ci
+
+    - name: Install client dependencies
+      run: |
+        cd client
+        npm ci
+
+    - name: Create server .env file
+      run: |
+        echo "${{ secrets.DEPLOY_ENV_VARIABLES_API }}" > server/.env
+
+    - name: Create client .env file
+      run: |
+        echo "${{ secrets.DEPLOY_ENV_VARIABLES_FRONT }}" > client/.env
+
+    - name: Build client
+      run: |
+        cd client
+        npm run build
+
+    - name: Deploy frontend build
+      uses: burnett01/rsync-deployments@v8
+      with:
+        switches: -avzr --delete
+        path: client/dist/
+        remote_path: ${{ secrets.DEPLOY_PATH_FRONT }}
+        remote_host: ${{ secrets.DEPLOY_HOST }}
+        remote_user: ${{ secrets.DEPLOY_USER }}
+        remote_port: ${{ env.DEPLOY_PORT }}
+        remote_key: ${{ secrets.DEPLOY_KEY }}
+
+    - name: Deploy API server
+      uses: burnett01/rsync-deployments@v8
+      with:
+        switches: -avzr --delete
+        path: server/
+        remote_path: ${{ secrets.DEPLOY_PATH_API }}
+        remote_host: ${{ secrets.DEPLOY_HOST }}
+        remote_user: ${{ secrets.DEPLOY_USER }}
+        remote_port: ${{ env.DEPLOY_PORT }}
+        remote_key: ${{ secrets.DEPLOY_KEY }}
+
+    - name: Install deps, init DB, restart
+      uses: appleboy/ssh-action@v1.2.5
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        port: ${{ env.DEPLOY_PORT }}
+        script: |
+          export NVM_DIR="$HOME/.nvm"
+          source "$NVM_DIR/nvm.sh"
+          nvm use node
+          cd ${{ secrets.DEPLOY_PATH_API }}
+          npm ci --omit=dev
+          pm2 restart API_AIM_RANKING || pm2 start src/index.js --name API_AIM_RANKING
+          pm2 save
