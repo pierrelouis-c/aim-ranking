@@ -1,6 +1,6 @@
 # Aim Ranking
 
-1-minute aim trainer. **Server** and **web** are separate apps — install and run each on its own.
+1-minute aim trainer. **Server** and **web** are separate apps — install and run each on its own..
 
 ## Server (`server/`)
 
