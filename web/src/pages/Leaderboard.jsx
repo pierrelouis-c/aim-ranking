@@ -4,7 +4,6 @@ import SiteHeader from '../components/SiteHeader.jsx';
 import { fetchLeaderboard, getStoredNickname } from '../api/client.js';
 
 const MEDALS = { 1: 'gold', 2: 'silver', 3: 'bronze' };
-const REFRESH_MS = 30_000;
 
 function formatDate(iso) {
   if (!iso) return '';
@@ -30,31 +29,22 @@ export default function Leaderboard() {
   useEffect(() => {
     let cancelled = false;
 
-    function load(initial) {
-      if (initial) {
-        setLoading(true);
-        setError('');
-      }
-      fetchLeaderboard(period, 50)
-        .then((data) => {
-          if (cancelled) return;
-          setScores(data.scores || []);
-          setError('');
-          setLoading(false);
-        })
-        .catch((err) => {
-          if (cancelled) return;
-          if (initial) setError(err.message || 'Failed to load leaderboard');
-          setLoading(false);
-        });
-    }
-
-    load(true);
-    const timer = setInterval(() => load(false), REFRESH_MS);
+    setLoading(true);
+    setError('');
+    fetchLeaderboard(period, 50)
+      .then((data) => {
+        if (cancelled) return;
+        setScores(data.scores || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err.message || 'Failed to load leaderboard');
+        setLoading(false);
+      });
 
     return () => {
       cancelled = true;
-      clearInterval(timer);
     };
   }, [period]);
 
@@ -141,7 +131,7 @@ export default function Leaderboard() {
           </div>
         )}
 
-        <p className="lb-footnote muted">Top 50 · refreshes every 30s</p>
+        <p className="lb-footnote muted">Top 50</p>
 
         <div className="cta-row">
           <Link to="/" className="btn btn-primary">
