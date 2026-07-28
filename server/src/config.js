@@ -28,7 +28,7 @@ export const config = {
   host: optional('HOST', '0.0.0.0'),
   corsOrigin: optional('CORS_ORIGIN', 'http://localhost:5173')
     .split(',')
-    .map((o) => o.trim())
+    .map((o) => o.trim().replace(/\/$/, ''))
     .filter(Boolean),
   maxScore: Number(optional('MAX_SCORE', '50000')),
 };
