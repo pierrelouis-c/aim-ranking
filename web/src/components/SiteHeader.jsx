@@ -10,7 +10,7 @@ export default function SiteHeader() {
         <span className="site-brand-dot" aria-hidden="true" />
         AIM RANKING
       </Link>
-      <nav className="site-nav">
+      <nav className="site-nav" aria-label="Main">
         {!onLeaderboard && (
           <Link to="/leaderboard" className="btn btn-ghost btn-sm">
             Leaderboard
