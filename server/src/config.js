@@ -24,7 +24,7 @@ function optional(name, fallback) {
 
 export const config = {
   databaseUrl: required('DATABASE_URL'),
-  port: Number(optional('PORT', '3001')),
+  port: Number(optional('PORT', '3010')),
   host: optional('HOST', '0.0.0.0'),
   corsOrigin: optional('CORS_ORIGIN', 'http://localhost:5173')
     .split(',')

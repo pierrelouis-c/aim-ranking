@@ -12,14 +12,14 @@ npm install
 npm run dev
 ```
 
-API: http://localhost:3001  
+API: http://localhost:3010  
 
 On start, runs `prisma db push` then the Express API.
 
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `DATABASE_URL` | yes | PostgreSQL URL (Prisma) |
-| `PORT` | no | default `3001` |
+| `PORT` | no | default `3010` |
 | `HOST` | no | default `0.0.0.0` |
 | `CORS_ORIGIN` | no | comma-separated origins |
 | `MAX_SCORE` | no | anti-cheat ceiling |
@@ -43,7 +43,7 @@ App: http://localhost:5173
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `VITE_API_URL` | no | API URL (default `http://localhost:3001`; Vite also proxies `/api`) |
+| `VITE_API_URL` | no | API URL (default `http://localhost:3010`; Vite also proxies `/api`) |
 
 ```bash
 npm run build
