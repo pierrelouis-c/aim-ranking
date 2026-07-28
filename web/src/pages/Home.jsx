@@ -121,24 +121,6 @@ export default function Home() {
             <p className="feature-text">Rare, small, short-lived — worth 2.5x. Don't blink.</p>
           </div>
         </div>
-
-        <section className="seo-about" aria-labelledby="about-heading">
-          <h2 id="about-heading">Free online aim trainer</h2>
-          <p>
-            AIM RANKING is a free browser aim trainer built for short, focused sessions.
-            Each round lasts 60 seconds: click moving targets, land perfect center hits,
-            and catch rare gold targets for bonus points. Submit your score and climb the
-            global leaderboard against players worldwide — no download, no account required.
-          </p>
-        </section>
-
-        <footer className="site-footer">
-          <nav aria-label="Footer">
-            <Link to="/">Home</Link>
-            <Link to="/leaderboard">Leaderboard</Link>
-          </nav>
-          <p>© {new Date().getFullYear()} AIM RANKING</p>
-        </footer>
       </div>
     </main>
   );
