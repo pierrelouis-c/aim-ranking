@@ -16,6 +16,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check deploy secrets
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_PATH_FRONT: ${{ secrets.DEPLOY_PATH_FRONT }}
+          DEPLOY_PATH_API: ${{ secrets.DEPLOY_PATH_API }}
+        run: |
+          missing=0
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_KEY DEPLOY_PATH_FRONT DEPLOY_PATH_API; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing secret: $name"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "Add the missing secrets in GitHub → Settings → Secrets and variables → Actions"
+            exit 1
+          fi
+          echo "Deploy secrets look set (port=${{ env.DEPLOY_PORT }})"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
