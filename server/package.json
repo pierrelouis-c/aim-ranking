@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node scripts/db-push.js && node --watch src/index.js",
-    "start": "node scripts/db-push.js && node src/index.js",
-    "db:push": "node scripts/db-push.js",
+    "dev": "prisma db push && node --watch src/index.js",
+    "start": "prisma db push && node src/index.js",
+    "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "postinstall": "prisma generate"
   },

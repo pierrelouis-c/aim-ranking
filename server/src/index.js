@@ -6,53 +6,50 @@ import scoresRouter from './routes/scores.js';
 
 const app = express();
 
-const allowedOrigins = new Set(config.corsOrigin);
-const allowAll = allowedOrigins.has('*');
-
+// Reflect the request Origin — public game API, avoids OPTIONS 500s from strict CORS
 app.use(
   cors({
-    origin(origin, callback) {
-      // Same-origin / server-to-server / curl (no Origin header)
-      if (!origin) {
-        callback(null, true);
-        return;
-      }
-      if (allowAll || allowedOrigins.has(origin)) {
-        callback(null, true);
-        return;
-      }
-      // Do NOT throw — throwing makes OPTIONS preflight return 500
-      console.warn(`CORS blocked origin: ${origin}`);
-      callback(null, false);
-    },
+    origin: true,
     methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     optionsSuccessStatus: 204,
   })
 );
+
+// Always answer preflight before other middleware can fail
+app.options('*', cors({ origin: true }));
+
 app.use(express.json({ limit: '32kb' }));
 
 app.get('/', (_req, res) => {
   res.json({
     name: 'aim-ranking-api',
     status: 'ok',
-    cors: [...allowedOrigins],
+    version: 2,
   });
+});
+
+app.get('/api/health', async (_req, res) => {
+  try {
+    await pingDb();
+    res.json({ ok: true });
+  } catch {
+    res.status(503).json({ ok: false, error: 'Database unavailable' });
+  }
 });
 
 app.use('/api', scoresRouter);
 
 app.use((err, _req, res, _next) => {
   console.error(err);
-  res.status(500).json({ error: 'Internal server error' });
+  res.status(500).json({ error: err?.message || 'Internal server error' });
 });
 
 async function start() {
   await pingDb();
 
   app.listen(config.port, config.host, () => {
-    console.log(`API listening on http://${config.host}:${config.port}`);
-    console.log(`CORS allowed: ${[...allowedOrigins].join(', ') || '(none)'}`);
+    console.log(`aim-ranking-api listening on http://${config.host}:${config.port}`);
   });
 }
 
