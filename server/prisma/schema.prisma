@@ -16,9 +16,11 @@ model Score {
   accuracy      Float
   avgReactionMs Int?     @map("avg_reaction_ms")
   bestStreak    Int?     @map("best_streak")
+  device        String?  @db.VarChar(16)
   createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([score(sort: Desc), createdAt(sort: Asc)], map: "scores_score_desc_idx")
   @@index([createdAt(sort: Desc)], map: "scores_created_at_idx")
+  @@index([device, score(sort: Desc), createdAt(sort: Asc)], map: "scores_device_score_desc_idx")
   @@map("scores")
 }

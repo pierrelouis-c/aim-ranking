@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import SiteHeader from '../components/SiteHeader.jsx';
-import { submitScore, updatePersonalBest } from '../api/client.js';
-import { gradeFor } from '../game/modes.js';
+import { detectDevice, submitScore, updatePersonalBest } from '../api/client.js';
+import { gradeFor, reactionLabel } from '../game/modes.js';
 
 const submittedKeys = new Set();
 
@@ -39,6 +39,7 @@ export default function Result() {
   const [copied, setCopied] = useState(false);
 
   const grade = result ? gradeFor(result) : 'D';
+  const reactTag = result ? reactionLabel(result.avgReactionMs) : null;
   const animatedScore = useCountUp(result?.score ?? 0, Boolean(result), 1000);
 
   function copyScore() {
@@ -67,6 +68,9 @@ export default function Result() {
       accuracy: result.accuracy,
       avgReactionMs: result.avgReactionMs,
       bestStreak: result.bestStreak,
+      device: detectDevice(),
+      arenaWidth: result.arenaWidth,
+      arenaHeight: result.arenaHeight,
     })
       .then((data) => {
         setSaved(data);
@@ -111,6 +115,11 @@ export default function Result() {
             {status === 'done' && saved?.rank != null && `Global rank #${saved.rank}`}
             {status === 'error' && 'Not ranked (save failed)'}
           </span>
+          {reactTag && (
+            <span className="score-hero-react" title="Average reaction style">
+              {reactTag} reactions
+            </span>
+          )}
         </div>
 
         <div className="stat-grid">
@@ -147,8 +156,8 @@ export default function Result() {
             <span className="stat-value">{result.bonusHits ?? 0}</span>
           </div>
           <div className="stat">
-            <span className="stat-label">Duration</span>
-            <span className="stat-value">60s</span>
+            <span className="stat-label">Expired</span>
+            <span className="stat-value">{result.expired ?? 0}</span>
           </div>
         </div>
 

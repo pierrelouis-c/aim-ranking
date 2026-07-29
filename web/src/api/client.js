@@ -16,8 +16,24 @@ async function request(path, options = {}) {
   return data;
 }
 
-export function fetchLeaderboard(period = 'all', limit = 50) {
-  return request(`/api/leaderboard?period=${encodeURIComponent(period)}&limit=${limit}`);
+export function detectDevice() {
+  if (typeof window === 'undefined') return 'desktop';
+  const coarse = window.matchMedia('(pointer: coarse)').matches;
+  const noHover = window.matchMedia('(hover: none)').matches;
+  const touchPoints = navigator.maxTouchPoints || 0;
+  if (touchPoints > 0 && (coarse || noHover)) return 'mobile';
+  return 'desktop';
+}
+
+export function fetchLeaderboard(period = 'all', device = 'all', limit = 50) {
+  const params = new URLSearchParams({
+    period,
+    limit: String(limit),
+  });
+  if (device === 'desktop' || device === 'mobile') {
+    params.set('device', device);
+  }
+  return request(`/api/leaderboard?${params.toString()}`);
 }
 
 export function fetchRank(score) {
@@ -32,7 +48,7 @@ export function submitScore(payload) {
 }
 
 export function fetchTopScores(limit = 3) {
-  return fetchLeaderboard('all', limit);
+  return fetchLeaderboard('all', 'all', limit);
 }
 
 export function getStoredNickname() {

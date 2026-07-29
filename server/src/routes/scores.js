@@ -16,6 +16,13 @@ function toFloat(value, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+const DEVICES = new Set(['desktop', 'mobile']);
+
+function normalizeDevice(value) {
+  const device = String(value || '').toLowerCase().trim();
+  return DEVICES.has(device) ? device : null;
+}
+
 function serializeScore(row, rank) {
   return {
     id: row.id,
@@ -26,6 +33,7 @@ function serializeScore(row, rank) {
     accuracy: row.accuracy,
     avgReactionMs: row.avgReactionMs,
     bestStreak: row.bestStreak,
+    device: row.device || null,
     createdAt: row.createdAt,
     ...(rank != null ? { rank } : {}),
   };
@@ -50,12 +58,16 @@ router.get('/health', async (_req, res) => {
 router.get('/leaderboard', async (req, res) => {
   try {
     const period = req.query.period === 'day' ? 'day' : 'all';
+    const device = normalizeDevice(req.query.device);
     const limit = Math.min(Math.max(toInt(req.query.limit, 50), 1), 100);
 
-    const where =
-      period === 'day'
-        ? { createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } }
-        : {};
+    const where = {};
+    if (period === 'day') {
+      where.createdAt = { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) };
+    }
+    if (device) {
+      where.device = device;
+    }
 
     const rows = await prisma.score.findMany({
       where,
@@ -64,7 +76,7 @@ router.get('/leaderboard', async (req, res) => {
     });
 
     const scores = rows.map((row, index) => serializeScore(row, index + 1));
-    res.json({ period, scores });
+    res.json({ period, device: device || 'all', scores });
   } catch (err) {
     console.error('leaderboard error', err);
     res.status(500).json({ error: 'Failed to load leaderboard' });
@@ -97,6 +109,7 @@ router.post('/scores', async (req, res) => {
       body.avgReactionMs == null ? null : toInt(body.avgReactionMs, -1);
     const bestStreak =
       body.bestStreak == null ? null : toInt(body.bestStreak, -1);
+    const device = normalizeDevice(body.device);
 
     if (!NICKNAME_RE.test(nickname)) {
       return res.status(400).json({
@@ -130,6 +143,17 @@ router.post('/scores', async (req, res) => {
       return res.status(400).json({ error: 'Invalid best streak' });
     }
 
+    if (device === 'desktop') {
+      const arenaWidth = toInt(body.arenaWidth, -1);
+      const arenaHeight = toInt(body.arenaHeight, -1);
+      if (
+        arenaWidth !== config.desktopArenaWidth ||
+        arenaHeight !== config.desktopArenaHeight
+      ) {
+        return res.status(400).json({ error: 'Invalid play area size' });
+      }
+    }
+
     const row = await prisma.score.create({
       data: {
         nickname,
@@ -139,6 +163,7 @@ router.post('/scores', async (req, res) => {
         accuracy: Math.round(accuracy * 100) / 100,
         avgReactionMs,
         bestStreak,
+        device,
       },
     });
 

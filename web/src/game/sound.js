@@ -61,8 +61,17 @@ export const sfx = {
   miss() {
     blip({ freq: 180, endFreq: 70, duration: 0.16, type: 'sawtooth', gain: 0.1 });
   },
+  expire() {
+    blip({ freq: 240, endFreq: 110, duration: 0.12, type: 'triangle', gain: 0.06 });
+  },
+  nearMiss() {
+    blip({ freq: 320, endFreq: 180, duration: 0.08, type: 'sine', gain: 0.05 });
+  },
   tick() {
     blip({ freq: 700, duration: 0.05, type: 'square', gain: 0.07 });
+  },
+  lowTick() {
+    blip({ freq: 880, duration: 0.04, type: 'square', gain: 0.05 });
   },
   go() {
     blip({ freq: 620, endFreq: 1240, duration: 0.22, type: 'triangle', gain: 0.16 });

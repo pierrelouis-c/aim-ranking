@@ -113,8 +113,8 @@ export default function Home() {
             <p className="feature-text">Nail the white center for a +40 bonus every time.</p>
           </div>
           <div className="feature-card">
-            <h2 className="feature-title">Moving targets</h2>
-            <p className="feature-text">They drift and bounce as the round gets harder.</p>
+            <h2 className="feature-title">Streak multiplier</h2>
+            <p className="feature-text">Chain hits to stack combo bonus — miss and it resets.</p>
           </div>
           <div className="feature-card">
             <h2 className="feature-title">Gold targets</h2>

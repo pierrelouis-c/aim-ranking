@@ -383,12 +383,41 @@ input {
   background: #05080f;
 }
 
+.play-desktop {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(94, 234, 212, 0.05), transparent 70%),
+    #03050a;
+}
+
 .arena {
   position: relative;
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.arena-desktop {
+  flex: none;
+  width: 1280px;
+  height: 720px;
+  overflow: hidden;
+  transform-origin: center center;
+  border: 1px solid rgba(139, 155, 184, 0.22);
+  box-shadow:
+    0 0 0 1px rgba(5, 8, 15, 0.8),
+    0 24px 60px rgba(0, 0, 0, 0.55);
+  background: #05080f;
+}
+
+.arena-desktop .aim-canvas {
+  flex: none;
+  width: 1280px;
+  height: 720px;
+  cursor: none;
 }
 
 .arena-hud {
@@ -466,6 +495,14 @@ input {
   display: block;
   cursor: crosshair;
   touch-action: none;
+}
+
+.score-hero-react {
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
 }
 
 .countdown-hint {
@@ -705,9 +742,61 @@ input {
   margin-bottom: 1.25rem;
 }
 
+.lb-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
 .period-tabs {
   display: flex;
   gap: 0.35rem;
+}
+
+.player-cell {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.player-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.device-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.12rem 0.4rem;
+  border-radius: 3px;
+  border: 1px solid var(--line);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgba(139, 155, 184, 0.08);
+  white-space: nowrap;
+}
+
+.device-badge svg {
+  flex-shrink: 0;
+}
+
+.device-desktop {
+  color: #9ec5fe;
+  border-color: rgba(158, 197, 254, 0.35);
+  background: rgba(158, 197, 254, 0.08);
+}
+
+.device-mobile {
+  color: #ffd166;
+  border-color: rgba(255, 209, 102, 0.35);
+  background: rgba(255, 209, 102, 0.08);
 }
 
 .tab {
@@ -846,6 +935,21 @@ input {
 
   .site-header {
     padding: 0.7rem 1rem;
+  }
+
+  .lb-header {
+    align-items: flex-start;
+  }
+
+  .device-badge-label {
+    display: none;
+  }
+
+  .lb-table th:nth-child(5),
+  .lb-table td:nth-child(5),
+  .lb-table th:nth-child(6),
+  .lb-table td:nth-child(6) {
+    display: none;
   }
 }
 
