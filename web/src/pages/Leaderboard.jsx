@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SiteHeader from '../components/SiteHeader.jsx';
+import MadeBy from '../components/MadeBy.jsx';
 import { fetchLeaderboard, getStoredNickname } from '../api/client.js';
 
 const MEDALS = { 1: 'gold', 2: 'silver', 3: 'bronze' };
@@ -190,6 +191,8 @@ export default function Leaderboard() {
             Play
           </Link>
         </div>
+
+        <MadeBy />
       </div>
     </main>
   );

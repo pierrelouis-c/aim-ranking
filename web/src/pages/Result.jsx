@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import SiteHeader from '../components/SiteHeader.jsx';
+import MadeBy from '../components/MadeBy.jsx';
 import { detectDevice, submitScore, updatePersonalBest } from '../api/client.js';
 import { gradeFor, reactionLabel } from '../game/modes.js';
 
@@ -178,6 +179,8 @@ export default function Result() {
             {copied ? 'Copied!' : 'Copy score'}
           </button>
         </div>
+
+        <MadeBy />
       </div>
     </main>
   );

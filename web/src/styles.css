@@ -295,6 +295,26 @@ input {
   color: var(--accent);
 }
 
+.made-by {
+  margin: 2.25rem 0 0;
+  text-align: center;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: rgba(139, 155, 184, 0.45);
+}
+
+.made-by a {
+  color: rgba(139, 155, 184, 0.55);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.made-by a:hover {
+  color: rgba(94, 234, 212, 0.75);
+  border-bottom-color: rgba(94, 234, 212, 0.35);
+}
+
 .podium {
   margin-top: 1.75rem;
   padding: 1rem 1.25rem;

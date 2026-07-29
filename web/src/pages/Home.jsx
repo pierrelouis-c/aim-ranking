@@ -6,6 +6,7 @@ import {
   getPersonalBest,
   fetchTopScores,
 } from '../api/client.js';
+import MadeBy from '../components/MadeBy.jsx';
 
 const NICKNAME_RE = /^[a-zA-Z0-9_]{3,16}$/;
 const MEDALS = ['gold', 'silver', 'bronze'];
@@ -121,6 +122,8 @@ export default function Home() {
             <p className="feature-text">Rare, small, short-lived — worth 2.5x. Don't blink.</p>
           </div>
         </div>
+
+        <MadeBy />
       </div>
     </main>
   );
