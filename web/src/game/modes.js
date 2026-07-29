@@ -1,14 +1,14 @@
 export const GAME = {
   radiusStart: 30,
-  radiusEnd: 13,
-  lifeStart: 1500,
-  lifeEnd: 620,
+  radiusEnd: 15,
+  lifeStart: 1550,
+  lifeEnd: 820,
   maxTargetsStart: 1,
-  maxTargetsEnd: 5,
+  maxTargetsEnd: 4,
   moveSpeedStart: 14,
-  moveSpeedEnd: 42,
+  moveSpeedEnd: 30,
   bonusChance: 0.11,
-  bonusChanceLate: 0.18,
+  bonusChanceLate: 0.16,
   spawnCursorClearance: 90,
 };
 

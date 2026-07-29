@@ -621,9 +621,9 @@ export default function AimCanvas({ nickname, onFinish }) {
         const kept = [];
         for (const t of s.targets) {
           if (nowTs - t.bornAt > t.lifetime) {
-            // Expired targets break streak but do not count as click-misses.
+            // Expired targets are a score opportunity lost — not a streak wipe.
+            // Only a bad click should break combo (keeps late-game fair).
             s.expired += 1;
-            s.streak = 0;
             s.particles.push(...spawnParticles(t.x, t.y, nowTs, '255, 90, 70', 8, 0.7));
             sfx.expire();
           } else {

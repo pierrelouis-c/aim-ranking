@@ -114,7 +114,7 @@ export default function Home() {
           </div>
           <div className="feature-card">
             <h2 className="feature-title">Streak multiplier</h2>
-            <p className="feature-text">Chain hits to stack combo bonus — miss and it resets.</p>
+            <p className="feature-text">Chain hits to stack combo — a bad click resets it, fading targets don't.</p>
           </div>
           <div className="feature-card">
             <h2 className="feature-title">Gold targets</h2>
