@@ -47,6 +47,31 @@ export function submitScore(payload) {
   });
 }
 
+const SUBMITTED_ROUNDS_KEY = 'aim_submitted_rounds';
+
+function readSubmittedRounds() {
+  try {
+    const raw = sessionStorage.getItem(SUBMITTED_ROUNDS_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export function hasSubmittedRound(roundId) {
+  if (!roundId) return false;
+  return readSubmittedRounds().includes(roundId);
+}
+
+export function markRoundSubmitted(roundId) {
+  if (!roundId) return;
+  const next = readSubmittedRounds().filter((id) => id !== roundId);
+  next.push(roundId);
+  // Cap growth in long sessions
+  sessionStorage.setItem(SUBMITTED_ROUNDS_KEY, JSON.stringify(next.slice(-50)));
+}
+
 export function fetchTopScores(limit = 3) {
   return fetchLeaderboard('all', 'all', limit);
 }

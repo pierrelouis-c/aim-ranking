@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   getStoredNickname,
   setStoredNickname,
-  getPersonalBest,
   fetchTopScores,
 } from '../api/client.js';
 import MadeBy from '../components/MadeBy.jsx';
@@ -16,7 +15,6 @@ export default function Home() {
   const [nickname, setNickname] = useState(getStoredNickname());
   const [error, setError] = useState('');
   const [top, setTop] = useState([]);
-  const pb = getPersonalBest();
 
   useEffect(() => {
     let cancelled = false;
@@ -85,13 +83,6 @@ export default function Home() {
             </Link>
           </div>
         </form>
-
-        {pb && (
-          <p className="pb-line">
-            Personal best: <strong>{pb.score}</strong> pts
-            {pb.rank != null ? ` · rank #${pb.rank}` : ''}
-          </p>
-        )}
 
         {top.length > 0 && (
           <div className="podium">

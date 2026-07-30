@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import SiteHeader from '../components/SiteHeader.jsx';
 import MadeBy from '../components/MadeBy.jsx';
-import { detectDevice, submitScore, updatePersonalBest } from '../api/client.js';
+import {
+  detectDevice,
+  hasSubmittedRound,
+  markRoundSubmitted,
+  submitScore,
+  updatePersonalBest,
+} from '../api/client.js';
 import { gradeFor, reactionLabel } from '../game/modes.js';
 
 const submittedKeys = new Set();
@@ -55,10 +61,16 @@ export default function Result() {
   useEffect(() => {
     if (!result) return undefined;
 
-    const key = `${result.nickname}-${result.score}-${result.hits}-${result.misses}-${result.avgReactionMs}`;
-    if (submittedKeys.has(key)) return undefined;
-    submittedKeys.add(key);
+    const key =
+      result.roundId ||
+      `${result.nickname}-${result.score}-${result.hits}-${result.misses}-${result.avgReactionMs}`;
 
+    if (submittedKeys.has(key) || hasSubmittedRound(key)) {
+      if (hasSubmittedRound(key)) setStatus('done');
+      return undefined;
+    }
+
+    submittedKeys.add(key);
     setStatus('saving');
 
     submitScore({
@@ -74,6 +86,7 @@ export default function Result() {
       arenaHeight: result.arenaHeight,
     })
       .then((data) => {
+        markRoundSubmitted(key);
         setSaved(data);
         setIsNewPb(updatePersonalBest({ ...result, rank: data.rank }));
         setStatus('done');

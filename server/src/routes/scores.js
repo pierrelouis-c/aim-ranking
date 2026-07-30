@@ -1,10 +1,15 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
 import { config } from '../config.js';
+import { clientIp, createRateLimiter } from '../rateLimit.js';
 
 const router = Router();
 
 const NICKNAME_RE = /^[a-zA-Z0-9_]{3,16}$/;
+const scoreRateLimit = createRateLimiter({
+  windowMs: config.scoreRateLimitWindowMs,
+  max: config.scoreRateLimitMax,
+});
 
 function toInt(value, fallback = 0) {
   const n = Number(value);
@@ -99,6 +104,15 @@ router.get('/scores/rank', async (req, res) => {
 
 router.post('/scores', async (req, res) => {
   try {
+    const ip = clientIp(req);
+    const limited = scoreRateLimit(ip);
+    if (!limited.allowed) {
+      res.set('Retry-After', String(limited.retryAfterSec));
+      return res.status(429).json({
+        error: `Too many score submissions. Try again in ${limited.retryAfterSec}s`,
+      });
+    }
+
     const body = req.body || {};
     const nickname = String(body.nickname || '').trim();
     const score = toInt(body.score, -1);

@@ -6,6 +6,9 @@ import scoresRouter from './routes/scores.js';
 
 const app = express();
 
+// Behind nginx — use X-Forwarded-For for rate limiting
+app.set('trust proxy', 1);
+
 // Reflect the request Origin — public game API, avoids OPTIONS 500s from strict CORS
 app.use(
   cors({

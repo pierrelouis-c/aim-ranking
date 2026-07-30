@@ -268,6 +268,10 @@ export default function AimCanvas({ nickname, onFinish }) {
           : Math.round(s.reactions.reduce((a, b) => a + b, 0) / s.reactions.length);
 
       finishOnce({
+        roundId:
+          typeof crypto !== 'undefined' && crypto.randomUUID
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
         nickname,
         score: s.score,
         hits: s.hits,

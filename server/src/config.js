@@ -31,6 +31,8 @@ export const config = {
     .map((o) => o.trim().replace(/\/$/, ''))
     .filter(Boolean),
   maxScore: Number(optional('MAX_SCORE', '50000')),
+  scoreRateLimitWindowMs: Number(optional('SCORE_RATE_LIMIT_WINDOW_MS', '60000')),
+  scoreRateLimitMax: Number(optional('SCORE_RATE_LIMIT_MAX', '2')),
   desktopArenaWidth: 1280,
   desktopArenaHeight: 720,
 };
