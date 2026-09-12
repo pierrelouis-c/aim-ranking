@@ -4,25 +4,59 @@ import {
   getStoredNickname,
   setStoredNickname,
   fetchTopScores,
+  fetchStats,
 } from '../api/client.js';
 import MadeBy from '../components/MadeBy.jsx';
 
 const NICKNAME_RE = /^[a-zA-Z0-9_]{3,16}$/;
 const MEDALS = ['gold', 'silver', 'bronze'];
 
+function formatGames(n) {
+  return new Intl.NumberFormat().format(n);
+}
+
+function Podium({ title, scores }) {
+  if (!scores.length) return null;
+  return (
+    <div className="podium">
+      <h2 className="podium-title">{title}</h2>
+      <ol className="podium-list">
+        {scores.map((row, i) => (
+          <li key={row.id} className="podium-row">
+            <span className={`podium-rank medal-${MEDALS[i]}`}>{i + 1}</span>
+            <span className="podium-name">{row.nickname}</span>
+            <span className="podium-score mono">{row.score}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState(getStoredNickname());
   const [error, setError] = useState('');
-  const [top, setTop] = useState([]);
+  const [topDesktop, setTopDesktop] = useState([]);
+  const [topMobile, setTopMobile] = useState([]);
+  const [totalGames, setTotalGames] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
-    fetchTopScores(3)
-      .then((data) => {
-        if (!cancelled) setTop(data.scores || []);
+
+    Promise.all([
+      fetchTopScores(3, 'desktop'),
+      fetchTopScores(3, 'mobile'),
+      fetchStats(),
+    ])
+      .then(([desktop, mobile, stats]) => {
+        if (cancelled) return;
+        setTopDesktop(desktop.scores || []);
+        setTopMobile(mobile.scores || []);
+        setTotalGames(typeof stats.totalGames === 'number' ? stats.totalGames : 0);
       })
       .catch(() => {});
+
     return () => {
       cancelled = true;
     };
@@ -39,6 +73,8 @@ export default function Home() {
     navigate('/play', { state: { nickname: name } });
   }
 
+  const showHall = topDesktop.length > 0 || topMobile.length > 0;
+
   return (
     <main className="page home-page">
       <div className="home-atmosphere" aria-hidden="true" />
@@ -54,6 +90,15 @@ export default function Home() {
         <p className="home-sub">
           Hit the center. Chain streaks. Chase gold targets before they fade.
         </p>
+
+        {totalGames != null && (
+          <p className="games-counter">
+            <span className="games-counter-value mono">{formatGames(totalGames)}</span>
+            <span className="games-counter-label">
+              {totalGames === 1 ? 'game played' : 'games played'}
+            </span>
+          </p>
+        )}
 
         <form className="start-form" onSubmit={start}>
           <label htmlFor="nickname" className="sr-only">
@@ -84,18 +129,10 @@ export default function Home() {
           </div>
         </form>
 
-        {top.length > 0 && (
-          <div className="podium">
-            <h2 className="podium-title">Hall of fame</h2>
-            <ol className="podium-list">
-              {top.map((row, i) => (
-                <li key={row.id} className="podium-row">
-                  <span className={`podium-rank medal-${MEDALS[i]}`}>{i + 1}</span>
-                  <span className="podium-name">{row.nickname}</span>
-                  <span className="podium-score mono">{row.score}</span>
-                </li>
-              ))}
-            </ol>
+        {showHall && (
+          <div className="podium-grid">
+            <Podium title="Hall of fame · Desktop" scores={topDesktop} />
+            <Podium title="Hall of fame · Mobile" scores={topMobile} />
           </div>
         )}
 

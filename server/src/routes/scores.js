@@ -102,6 +102,16 @@ router.get('/scores/rank', async (req, res) => {
   }
 });
 
+router.get('/stats', async (_req, res) => {
+  try {
+    const totalGames = await prisma.score.count();
+    res.json({ totalGames });
+  } catch (err) {
+    console.error('stats error', err);
+    res.status(500).json({ error: 'Failed to load stats' });
+  }
+});
+
 router.post('/scores', async (req, res) => {
   try {
     const ip = clientIp(req);

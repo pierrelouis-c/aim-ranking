@@ -72,8 +72,12 @@ export function markRoundSubmitted(roundId) {
   sessionStorage.setItem(SUBMITTED_ROUNDS_KEY, JSON.stringify(next.slice(-50)));
 }
 
-export function fetchTopScores(limit = 3) {
-  return fetchLeaderboard('all', 'all', limit);
+export function fetchTopScores(limit = 3, device = 'all') {
+  return fetchLeaderboard('all', device, limit);
+}
+
+export function fetchStats() {
+  return request('/api/stats');
 }
 
 export function getStoredNickname() {
